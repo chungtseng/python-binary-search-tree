@@ -66,7 +66,80 @@ class BinarySearchTree:
                 return None
         focusNode.printData()
 
-    def deleteNode(self, key):
+    def removeNode(self, key):
+        focusNode = self.root
+        parent = self.root
+        isLeftChild = True
+        while(focusNode.key != key):
+            parent = focusNode
+
+            # go left
+            if(key < focusNode.key):
+                isLeftChild = True
+                focusNode = focusNode.leftChild
+            # go right
+            else:
+                isLeftChild = False
+                focusNode = focusNode.rightChild
+
+            if(focusNode == None):
+                return False
+
+        if focusNode.leftChild == None and focusNode.rightChild == None:
+            if focusNode == self.root:
+                self.root = None
+            elif isLeftChild:
+                parent.leftChild = None
+            else:
+                parent.rightChild = None
+
+        # no right child
+        elif focusNode.rightChild == None:
+            if focusNode == self.root:
+                root  = focusNode.leftChild
+            elif isLeftChild:
+                parent.leftChild = focusNode.leftChild
+            else:
+                parent.rightChild = focusNode.leftChild
+
+        # no left child
+        elif focusNode.leftChild == None:
+            if focusNode == self.root:
+                root = focusNode.rightChild
+            elif isLeftchild:
+                parent.leftChild = focusNode.rightCHild
+            else:
+                parent.rightChild = focusNode.rightChild
+
+        else:
+            replacement = getReplacementNode(focusNode)
+            if focusNode == self.root:
+                root = replacement
+            elif isLeftChild:
+                parent.leftChild = replacement
+            else:
+                parent.rightChild = replacement
+            replacement.leftchild = focusNode.leftChild
+
+        return True
+
+    def getReplacementNode(self, replacedNode):
+        replacementParent = replacedNode
+        replacement = replacedNode
+        focusNode = replacedNode.rightChild
+
+        # move nodes
+        while(focusNode != None):
+            replacementParent = replacement
+            replacement = focusNode
+            focusNode = focusNode.leftChild
+
+        if replacement != replacedNode.rightChild:
+            replacementParent.leftChild = replacement.rightChild
+            replacement.rightChild = replacedNode.rightChild
+
+        return replacement
+            
 
 if __name__ == "__main__":
     b = BinarySearchTree()
@@ -75,6 +148,7 @@ if __name__ == "__main__":
     b.addNode(15, "Office Manager")
     b.addNode(30, "Secretary")
     b.addNode(75, "Sales Manager")
+    b.addNode(150, "To be deleted")
 
     print("--- In order")
     b.inOrderTraverseTree(b.root)
@@ -85,3 +159,9 @@ if __name__ == "__main__":
 
     print("--- Find node 30")
     b.findNode(30)
+
+    print("--- Remove key 150")
+    b.removeNode(150)
+
+    print("--- In order")
+    b.inOrderTraverseTree(b.root)
